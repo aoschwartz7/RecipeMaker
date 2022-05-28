@@ -1,5 +1,5 @@
 from flask_restful import reqparse, Resource, marshal_with, fields
-from api.recipe.recipe import Recipe, get_recipe_book
+from api.recipe.model import Recipe, get_recipe_book
 
 recipeBook = get_recipe_book("data.json")
 

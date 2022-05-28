@@ -1,5 +1,6 @@
 from typing import Union
 import json
+from pathlib import Path
 
 
 class Recipe:
@@ -26,7 +27,11 @@ class Recipe:
 
 # Create recipe book from recipes data
 def get_recipe_book(jsonDataFile: str) -> list[object]:
-    with open("data.json") as f:
+    jsonDataFile = Path(jsonDataFile)
+    assert (
+        jsonDataFile.exists()
+    ), f"No such data file containing recipes: {jsonDataFile}"
+    with open(jsonDataFile) as f:
         recipesJSON = json.load(f)
         recipeBook = []
         for r in recipesJSON["recipes"]:
