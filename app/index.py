@@ -1,10 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource, reqparse
 from recipe import Recipe, get_recipe_book
-import json
-
-# TODO: need type to be list of strings for ingredients and instructions, not string.
-
 
 recipeBook = get_recipe_book()
 # automatically parse through requests that are sent and make sure it matches guidelines
