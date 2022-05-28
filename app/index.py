@@ -16,6 +16,7 @@ recipe_put_args.add_argument(
 recipe_put_args.add_argument(
     "ingredients",
     type=str,
+    action="append",
     help="Ingredients list is required",
     required=True,
     location="form",
@@ -23,6 +24,7 @@ recipe_put_args.add_argument(
 recipe_put_args.add_argument(
     "instructions",
     type=str,
+    action="append",
     help="Instructions list is required",
     required=True,
     location="form",
