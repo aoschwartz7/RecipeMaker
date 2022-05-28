@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
-from flask_restful import Api, Resource, reqparse
+from flask import Flask
+from flask_restful import Api, Resource, reqparse, marshal_with, fields
 from recipe import Recipe, get_recipe_book
 
 recipeBook = get_recipe_book()
 # automatically parse through requests that are sent and make sure it matches guidelines
-recipe_put_args = reqparse.RequestParser()
+recipe_put_args = reqparse.RequestParser(bundle_errors=True)
 # list mandatory arguments
 recipe_put_args.add_argument(
     "name", type=str, help="Name of recipe is required", required=True, location="form"
@@ -31,12 +31,17 @@ recipe_put_args.add_argument(
 
 app = Flask(__name__)
 api = Api(app)  # wrap app in a restful API
+app.config.from_object("config.DevConfig")
 
 # TODO: Can combine classes with same path
 
 
-class AllRecipeNames(Resource):
-    def get(self):
+class RecipeNamesList(Resource):
+    # prepare return data to be serialized
+    mfields = {"recipeNames": fields.List(fields.String)}
+
+    @marshal_with(mfields)
+    def get(self) -> list[str]:
         return {"recipeNames": [n.name for n in recipeBook]}, 200
 
 
@@ -93,7 +98,7 @@ class updateRecipe(Resource):
             return {"error": "Recipe does not exist"}, 404
 
 
-api.add_resource(AllRecipeNames, "/recipes")
+api.add_resource(RecipeNamesList, "/recipes")
 api.add_resource(GetRecipeName, "/recipes/details/<string:recipe_name>")
 api.add_resource(AddRecipe, "/recipes")
 api.add_resource(updateRecipe, "/recipes")

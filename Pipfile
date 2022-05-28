@@ -8,6 +8,8 @@ flask = "*"
 marshmallow = "*"
 flask-restful = "*"
 requests = "*"
+pytest = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
