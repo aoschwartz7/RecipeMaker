@@ -10,6 +10,7 @@ flask-restful = "*"
 requests = "*"
 pytest = "*"
 python-dotenv = "*"
+docker = "*"
 
 [dev-packages]
 
