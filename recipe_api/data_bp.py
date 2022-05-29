@@ -15,12 +15,8 @@ from flask_restful import reqparse, Resource, marshal_with, fields
 from recipeModel import Recipe, get_recipe_book
 
 recipeBook = get_recipe_book("data.json")
-# TODO: can convert recipeBook objects to JSON https://pythonexamples.org/convert-python-class-object-to-json/
-# This will make searching for data simpler below
 
-# automatically parse through requests that are sent and make sure it matches guidelines
 recipe_put_args = reqparse.RequestParser(bundle_errors=True)
-# list mandatory arguments
 recipe_put_args.add_argument(
     "name", type=str, help="Name of recipe is required", required=True, location="form"
 )
@@ -43,7 +39,7 @@ recipe_put_args.add_argument(
 
 
 class RecipeNamesList(Resource):
-    # prepare return data to be serialized
+    # prepare return data to be serialized with marshal
     mfields = {"recipeNames": fields.List(fields.String)}
 
     @marshal_with(mfields)
@@ -89,7 +85,7 @@ class AddRecipe(Resource):
                     len(args.instructions),
                 )
             )
-            return {"recipe": args}, 201
+            return {}, 201
 
 
 class updateRecipe(Resource):
