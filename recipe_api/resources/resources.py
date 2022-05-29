@@ -1,7 +1,9 @@
 from flask_restful import reqparse, Resource, marshal_with, fields
-from api.recipe.model import Recipe, get_recipe_book
+from recipeModel import Recipe, get_recipe_book
 
 recipeBook = get_recipe_book("data.json")
+# TODO: can convert recipeBook objects to JSON https://pythonexamples.org/convert-python-class-object-to-json/
+# This will make searching for data simpler below
 
 # automatically parse through requests that are sent and make sure it matches guidelines
 recipe_put_args = reqparse.RequestParser(bundle_errors=True)
@@ -37,6 +39,13 @@ class RecipeNamesList(Resource):
 
 
 class GetRecipeName(Resource):
+    mfields = {
+        "details": fields.Nested(
+            {"ingredients": fields.List(fields.String), "numSteps": fields.Integer}
+        )
+    }
+
+    @marshal_with(mfields)
     def get(self, recipe_name: str):
         names = [r.name for r in recipeBook]
         if recipe_name in names:
@@ -53,6 +62,7 @@ class GetRecipeName(Resource):
 
 
 class AddRecipe(Resource):
+    # TODO: marshal_with
     def post(self):
         args = recipe_put_args.parse_args()
         if args.name in [r.name for r in recipeBook]:
@@ -70,6 +80,7 @@ class AddRecipe(Resource):
 
 
 class updateRecipe(Resource):
+    # TODO: marshal_with
     def put(self):
         args = recipe_put_args.parse_args()
         if args.name in [r.name for r in recipeBook]:
