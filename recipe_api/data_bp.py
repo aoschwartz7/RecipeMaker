@@ -1,11 +1,9 @@
-import functools
-
 from flask import Blueprint
 
 from flask_restful import reqparse, Resource, marshal_with, fields
-from recipeModel import Recipe, get_recipe_book
+from recipe_api.recipeModel import Recipe, get_recipe_book
 
-recipeBook = get_recipe_book("data.json")
+recipeBook = get_recipe_book("./recipe_api/data.json")
 
 recipe_put_args = reqparse.RequestParser(bundle_errors=True)
 recipe_put_args.add_argument(

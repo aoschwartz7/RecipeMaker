@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint
 from flask_restful import Api
-from data_bp import (
+from recipe_api.data_bp import (
     RecipeNamesList,
     GetRecipeName,
     AddRecipe,
@@ -9,7 +9,7 @@ from data_bp import (
 
 app = Flask(__name__)
 api_bp = Blueprint("api", __name__)
-app.config.from_object("config.DevConfig")
+app.config["DEVELOPMENT"] = True
 api = Api(app)  # wrap app in a restful API
 
 

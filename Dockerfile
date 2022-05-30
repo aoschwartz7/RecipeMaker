@@ -25,10 +25,7 @@ FROM base AS runtime
 COPY --from=python-deps /.venv /.venv
 ENV PATH="/.venv/bin:$PATH"
 
-WORKDIR /RecipeMaker
-
-# COPY requirements.txt requirements.txt
-# RUN pip3 install -r requirements.txt
+WORKDIR /usr/src/app
 
 COPY . .
 
@@ -36,5 +33,3 @@ ENV FLASK_APP=./recipe_api/index.py
 ENV FLASK_ENV=development
 
 CMD ["flask", "run", "--host=0.0.0.0"]
-
-# "source $(pipenv --venv)/bin/activate", "&&" 
