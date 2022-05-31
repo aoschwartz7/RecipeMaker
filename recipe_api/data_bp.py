@@ -1,11 +1,11 @@
+from flask import Blueprint
+
 from flask_restful import reqparse, Resource, marshal_with, fields
-from api.recipe.model import Recipe, get_recipe_book
+from recipe_api.recipeModel import Recipe, get_recipe_book
 
-recipeBook = get_recipe_book("data.json")
+recipeBook = get_recipe_book("./recipe_api/data.json")
 
-# automatically parse through requests that are sent and make sure it matches guidelines
 recipe_put_args = reqparse.RequestParser(bundle_errors=True)
-# list mandatory arguments
 recipe_put_args.add_argument(
     "name", type=str, help="Name of recipe is required", required=True, location="form"
 )
@@ -28,7 +28,7 @@ recipe_put_args.add_argument(
 
 
 class RecipeNamesList(Resource):
-    # prepare return data to be serialized
+    # prepare return data to be serialized with marshal
     mfields = {"recipeNames": fields.List(fields.String)}
 
     @marshal_with(mfields)
@@ -37,6 +37,13 @@ class RecipeNamesList(Resource):
 
 
 class GetRecipeName(Resource):
+    mfields = {
+        "details": fields.Nested(
+            {"ingredients": fields.List(fields.String), "numSteps": fields.Integer}
+        )
+    }
+
+    @marshal_with(mfields)
     def get(self, recipe_name: str):
         names = [r.name for r in recipeBook]
         if recipe_name in names:
@@ -53,6 +60,7 @@ class GetRecipeName(Resource):
 
 
 class AddRecipe(Resource):
+    # TODO: marshal_with
     def post(self):
         args = recipe_put_args.parse_args()
         if args.name in [r.name for r in recipeBook]:
@@ -66,10 +74,11 @@ class AddRecipe(Resource):
                     len(args.instructions),
                 )
             )
-            return {"recipe": args}, 201
+            return {}, 201
 
 
 class updateRecipe(Resource):
+    # TODO: marshal_with
     def put(self):
         args = recipe_put_args.parse_args()
         if args.name in [r.name for r in recipeBook]:
@@ -87,3 +96,6 @@ class updateRecipe(Resource):
             return {}, 201
         else:
             return {"error": "Recipe does not exist"}, 404
+
+
+bp = Blueprint("auth", __name__, url_prefix="/auth")
