@@ -1,9 +1,8 @@
 from flask import Blueprint
 
 from flask_restful import reqparse, Resource, marshal_with, fields
-from recipe_api.recipeModel import Recipe, get_recipe_book
+from recipe_api.recipeModel import Recipes
 
-recipeBook = get_recipe_book("./recipe_api/data.json")
 
 recipe_put_args = reqparse.RequestParser(bundle_errors=True)
 recipe_put_args.add_argument(
@@ -33,7 +32,8 @@ class RecipeNamesList(Resource):
 
     @marshal_with(mfields)
     def get(self) -> list[str]:
-        return {"recipeNames": [n.name for n in recipeBook]}, 200
+        recipes = [recipe.get("name") for recipe in Recipes.load()]
+        return {"recipeNames": recipes}, 200
 
 
 class GetRecipeName(Resource):
@@ -45,57 +45,49 @@ class GetRecipeName(Resource):
 
     @marshal_with(mfields)
     def get(self, recipe_name: str):
-        names = [r.name for r in recipeBook]
-        if recipe_name in names:
-            recipe = next((r for r in recipeBook if r.name == recipe_name), None)
-            return {
-                "details": {
-                    "ingredients": recipe.ingredients,
-                    "numSteps": recipe.numSteps,
-                }
-            }, 200
+        response = {}
+        recipes: list = Recipes.load()
+        recipe = Recipes.get_by_name(recipes, recipe_name)
 
-        else:
-            return {}, 200
+        if recipe:
+            response = {
+                "details": {
+                    "ingredients": recipe.get("ingredients"),
+                    "numSteps": len(recipe.get("instructions")),
+                }
+            }
+
+        return response, 200
 
 
 class AddRecipe(Resource):
     # TODO: marshal_with
     def post(self):
-        args = recipe_put_args.parse_args()
-        if args.name in [r.name for r in recipeBook]:
+        data = recipe_put_args.parse_args()
+        recipes = Recipes.load()
+        existing_recipe = Recipes.get_by_name(recipes, data.get("name"))
+
+        if existing_recipe:
             return {"error": "Recipe already exists"}, 400
-        else:
-            recipeBook.append(
-                Recipe(
-                    args.name,
-                    args.ingredients,
-                    args.instructions,
-                    len(args.instructions),
-                )
-            )
-            return {}, 201
+
+        recipes.append(data)
+        Recipes.write(recipes)
+        return "", 201
 
 
 class updateRecipe(Resource):
     # TODO: marshal_with
     def put(self):
-        args = recipe_put_args.parse_args()
-        if args.name in [r.name for r in recipeBook]:
-            for i, o in enumerate(recipeBook):
-                if o.name == args.name:
-                    del recipeBook[i]
-                    recipeBook.append(
-                        Recipe(
-                            args.name,
-                            args.ingredients,
-                            args.instructions,
-                            len(args.instructions),
-                        )
-                    )
-            return {}, 201
-        else:
+        data = recipe_put_args.parse_args()
+        recipes = Recipes.load()
+        existing_recipe = Recipes.get_by_name(recipes, data.get("name"))
+
+        if not existing_recipe:
             return {"error": "Recipe does not exist"}, 404
+
+        Recipes.update_recipe(existing_recipe, data)
+        Recipes.write(recipes)
+        return "", 204
 
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")

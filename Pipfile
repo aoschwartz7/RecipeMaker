@@ -11,6 +11,8 @@ requests = "*"
 pytest = "*"
 python-dotenv = "*"
 docker = "*"
+black = "*"
+mock = "*"
 
 [dev-packages]
 
