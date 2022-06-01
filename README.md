@@ -1,2 +1,9 @@
-# RecipeMaker
- Restful APIs with Python and Flask tutorial
+# Flask RESTful API
+
+## Dependencies
+-Python
+-Flask
+-Pip
+
+## Running
+`sh bootstrap.sh`
