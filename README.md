@@ -1,9 +1,9 @@
 # Flask RESTful API
 
 ## Dependencies
--- Python
--- Flask
--- Pip
+* Python
+* Flask
+* Pip
 
 ## Running
 `sh bootstrap.sh`
